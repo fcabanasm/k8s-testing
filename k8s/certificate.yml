@@ -1,0 +1,18 @@
+apiVersion: certmanager.k8s.io/v1alpha2
+kind: Certificate
+metadata:
+  name: k8s-miterna-com-tls
+spec:
+  secretName: k8s-miterna-com
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: kubernetes.miterna.com
+  dnsNames:
+    - kubernetes.miterna.com
+  acme:
+    config:
+      - http01:
+          ingressClass: nginx
+        domains:
+          - kubernetes.miterna.com
