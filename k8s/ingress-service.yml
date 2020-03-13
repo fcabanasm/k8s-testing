@@ -1,31 +1,37 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: ingress-service-client
+  name: ingress-service
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
+  tls:
+    - hosts:
+        - kubernetes.miterna.com
+      secretName: k8s-miterna-com
   rules:
-    - http:
+    - host: kubernetes.miterna.com
+      http:
         paths:
-          - path: /
+          - path: /?(.*)
             backend:
               serviceName: client-cluster-ip-service
               servicePort: 3000
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: ingress-service-server
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-spec:
-  rules:
-    - http:
+          - path: /api/?(.*)
+            backend:
+              serviceName: server-cluster-ip-service
+              servicePort: 5000
+    - host: kubernetes.miterna.com
+      http:
         paths:
-          - path: /api(/|$)(.*)
+          - path: /?(.*)
+            backend:
+              serviceName: client-cluster-ip-service
+              servicePort: 3000
+          - path: /api/?(.*)
             backend:
               serviceName: server-cluster-ip-service
               servicePort: 5000
