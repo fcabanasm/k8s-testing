@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: client
-          image: fcabanasm/kubernetes-client:v2
+          image: fcabanasm/kubernetes-client
           ports:
             - containerPort: 3000
